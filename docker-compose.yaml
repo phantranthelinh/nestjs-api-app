@@ -1,0 +1,19 @@
+services:
+  dev-database:
+    image: postgres:15
+    container_name: dev-database
+    ports:
+      - 5434:5432 #{port in host (myPC)} : {port in container}
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Alexphn19
+      POSTGRES_DB: testdb
+    networks:
+      - nestjs-network
+networks: 
+  nestjs-network:
+#Create container, network,... from "docker composer" file:
+#-d :  detech mode
+#docker compose up -d
+#how to remove containers+volumes
+#docker compose rm  "container name" --stop --force --volume
