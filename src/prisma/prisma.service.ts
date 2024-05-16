@@ -12,4 +12,13 @@ export class PrismaService extends PrismaClient {
       },
     });
   }
+
+  cleanDatabase() {
+    //*in a 1 - n relation, delete N firstly, then delete "1"
+    return this.$transaction([
+      //* 2 commands in One transaction
+      this.note.deleteMany(),
+      this.user.deleteMany(),
+    ]);
+  }
 }
