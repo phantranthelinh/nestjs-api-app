@@ -6,8 +6,8 @@ export class InsertNoteDTO {
   title: string;
   @IsString()
   @IsOptional()
-  description?: string;
+  description: string;
   @IsString()
   @IsOptional()
-  url?: string;
+  url: string;
 }

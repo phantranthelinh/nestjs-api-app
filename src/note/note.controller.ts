@@ -4,10 +4,13 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { User } from '../auth/decorator';
@@ -20,16 +23,15 @@ export class NoteController {
   constructor(private noteService: NoteService) {}
   @Post('/')
   insertNote(@User('id') userId: number, @Body() body: InsertNoteDTO) {
-    console.log('insertNote', userId);
     return this.noteService.insertNote(userId, body);
   }
   @Get(':id')
   getNote(@Param('id') noteId: number) {
     return this.noteService.getNoteById(noteId);
   }
-  @Get('/notes')
-  getNotes(@User('id') userId: number) {
-    return this.noteService.getNotes(userId);
+  @Get('')
+  getNotes() {
+    return this.noteService.getNotes();
   }
   @Patch(':id')
   updateNoteById(
@@ -38,8 +40,9 @@ export class NoteController {
   ) {
     return this.noteService.updateNoteById(noteId, updateNoteDTO);
   }
-  @Delete(':id')
-  deleteNote(@Param('id', ParseIntPipe) noteId: number) {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('')
+  deleteNote(@Query('id', ParseIntPipe) noteId: number) {
     return this.noteService.deleteById(noteId);
   }
 }

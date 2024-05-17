@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { InsertNoteDTO, UpdateNoteDTO } from './dto';
 
@@ -6,21 +6,25 @@ import { InsertNoteDTO, UpdateNoteDTO } from './dto';
 export class NoteService {
   constructor(private prismaService: PrismaService) {}
   async insertNote(userId: number, insertNoteDTO: InsertNoteDTO) {
-    const note = await this.prismaService.note.create({
-      data: {
-        ...insertNoteDTO,
-        userId: userId,
-      },
-    });
+    try {
+      const note = await this.prismaService.note.create({
+        data: {
+          ...insertNoteDTO,
+          userId: userId,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
-  getNoteById(id: number) {
-    return this.prismaService.note.findFirst({
+  async getNoteById(noteId: number) {
+    return await this.prismaService.note.findFirst({
       where: {
-        id: id,
+        id: noteId,
       },
     });
   }
-  getNotes(userId: number) {
+  getNotes() {
     return this.prismaService.note.findMany({});
   }
   updateNoteById(id: number, updateNoteDTO: UpdateNoteDTO) {
@@ -30,7 +34,16 @@ export class NoteService {
       },
     });
   }
-  deleteById(noteId: number) {
+  async deleteById(noteId: number) {
+    const note = await this.prismaService.note.findUnique({
+      where: {
+        id: noteId,
+      },
+    });
+
+    if (!note) {
+      throw new ForbiddenException('Cannot find note to delete');
+    }
     return this.prismaService.note.delete({
       where: {
         id: noteId,
